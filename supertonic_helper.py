@@ -210,6 +210,34 @@ class TextToSpeech:
         wav, *_ = self.vocoder_ort.run(None, {"latent": xt})
         return wav, dur_onnx
 
+    # def __call__(
+    #     self,
+    #     text: str,
+    #     style: Style,
+    #     total_step: int,
+    #     speed: float = 1.05,
+    #     silence_duration: float = 0.3,
+    # ) -> tuple[np.ndarray, np.ndarray]:
+    #     assert (
+    #         style.ttl.shape[0] == 1
+    #     ), "Single speaker text to speech only supports single style"
+    #     text_list = chunk_text(text)
+    #     print(text_list)
+    #     wav_cat = None
+    #     dur_cat = None
+    #     for text in text_list:
+    #         wav, dur_onnx = self._infer([text], style, total_step, speed)
+    #         if wav_cat is None:
+    #             wav_cat = wav
+    #             dur_cat = dur_onnx
+    #         else:
+    #             silence = np.zeros(
+    #                 (1, int(silence_duration * self.sample_rate)), dtype=np.float32
+    #             )
+    #             wav_cat = np.concatenate([wav_cat, silence, wav], axis=1)
+    #             dur_cat += dur_onnx + silence_duration
+    #     return wav_cat, dur_cat
+
     def __call__(
         self,
         text: str,
@@ -217,31 +245,59 @@ class TextToSpeech:
         total_step: int,
         speed: float = 1.05,
         silence_duration: float = 0.3,
-    ) -> tuple[np.ndarray, np.ndarray]:
-        assert (
-            style.ttl.shape[0] == 1
-        ), "Single speaker text to speech only supports single style"
+        end_silence_duration: float = 0.5,
+    ):
+        assert style.ttl.shape[0] == 1, "Single speaker text to speech only supports single style"
+
         text_list = chunk_text(text)
-        print(text_list)
+
         wav_cat = None
-        dur_cat = None
-        for text in text_list:
-            wav, dur_onnx = self._infer([text], style, total_step, speed)
+        timestamps = []
+
+        current_time = 0.0
+        dur_cat = 0.0
+
+        for i, chunk in enumerate(text_list):
+            wav, dur_onnx = self._infer([chunk], style, total_step, speed)
+
+            chunk_duration = float(dur_onnx[0])
+            start_time = current_time
+            end_time = start_time + chunk_duration
+
+            timestamps.append({
+                "text": chunk,
+                "start": start_time,
+                "end": end_time,
+            })
+
             if wav_cat is None:
                 wav_cat = wav
-                dur_cat = dur_onnx
             else:
                 silence = np.zeros(
-                    (1, int(silence_duration * self.sample_rate)), dtype=np.float32
+                    (1, int(silence_duration * self.sample_rate)),
+                    dtype=np.float32,
                 )
                 wav_cat = np.concatenate([wav_cat, silence, wav], axis=1)
-                dur_cat += dur_onnx + silence_duration
-        return wav_cat, dur_cat
 
-    def batch(
-        self, text_list: list[str], style: Style, total_step: int, speed: float = 1.05
-    ) -> tuple[np.ndarray, np.ndarray]:
-        return self._infer(text_list, style, total_step, speed)
+            current_time = end_time + silence_duration
+
+        # add silence at the very end
+        if end_silence_duration > 0:
+            tail_silence = np.zeros(
+                (1, int(end_silence_duration * self.sample_rate)),
+                dtype=np.float32,
+            )
+            wav_cat = np.concatenate([wav_cat, tail_silence], axis=1)
+            current_time += end_silence_duration
+
+        dur_cat = current_time
+
+        return wav_cat, dur_cat, timestamps
+
+        def batch(
+            self, text_list: list[str], style: Style, total_step: int, speed: float = 1.05
+        ) -> tuple[np.ndarray, np.ndarray]:
+            return self._infer(text_list, style, total_step, speed)
 
 
 def length_to_mask(lengths: np.ndarray, max_len: Optional[int] = None) -> np.ndarray:
@@ -372,7 +428,8 @@ def sanitize_filename(text: str, max_len: int) -> str:
     prefix = text[:max_len]
     return re.sub(r"[^a-zA-Z0-9]", "_", prefix)
 
-
+# todo: long sentences are not split regardless of len
+# we could split very long sentences by commas where it makes sense. 
 def chunk_text(text: str, max_len: int = 50) -> list[str]:
     """
     Split text into chunks by paragraphs and sentences.
