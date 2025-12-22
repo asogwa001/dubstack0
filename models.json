@@ -1,0 +1,39 @@
+{
+  "models": [
+    {
+      "name": "supertonic-66m",
+      "available_voices": [
+        "Liam",
+        "Ethan",
+        "Noah",
+        "Lucas",
+        "Oliver",
+        "Ava",
+        "Sophia",
+        "Isabella",
+        "Mia",
+        "Luna"
+    ],
+      "running": true,
+      "voice_cloning": false
+    },    
+    {
+      "name": "kokoro-82m",
+      "available_voices": [
+        "Maya", 
+        "Eduardo"
+    ],
+      "running": false,
+      "voice_cloning": false
+    },
+    {
+      "name": "chatterbox-500m",
+      "available_voices": [
+        "Alex", 
+        "Sophie"
+    ],
+      "running": false,
+      "voice_cloning": true
+    }
+  ]
+}
