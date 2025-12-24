@@ -1,0 +1,9 @@
+artifacts
+__pycache__
+outputs
+*.mp4
+venv
+*.env*
+keys
+*.mp4
+models
