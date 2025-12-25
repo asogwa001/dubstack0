@@ -106,7 +106,7 @@ def main():
 
     entry = {
         "id": str(uuid.uuid4()),
-        "name": video_name,
+        "name": stored_video_name,
         "url": preview_url,
         "duration": duration,
         "tags": tags
@@ -117,7 +117,7 @@ def main():
 
     VIDEOS_JSON.write_text(json.dumps(data, indent=2))
 
-    print("✅ Video added successfully")
+    print("Video added")
     print(f"   ID: {entry['id']}")
     print(f"   Preview: {preview_path}")
     print(f"   Duration: {duration}")
