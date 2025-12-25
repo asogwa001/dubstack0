@@ -2,7 +2,7 @@
 
 This project implements a pipeline that dubs explainers or short stories over gameplay parkour videos (brainrot-style content). It uses lightweight local models and runs 100% offline, making it simple to extend. Voice cloning is also supported.
 
-[Example output](videos/60b58583-8342-48fa-9e7c-5e74bada278c.mp4)
+[Example output](videos/demo.mp4)
 
 ## Requirements
 
