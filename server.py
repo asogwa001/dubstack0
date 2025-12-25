@@ -17,7 +17,7 @@ from supertonic_helper import (
     Style,
     TextToSpeech,
 )
-from dub import dub_video
+from ffmpeg_dub import dub_video
 
 
 class TTSResult(BaseModel):
@@ -161,7 +161,7 @@ class ModelRegistry:
 
 
 registry = ModelRegistry()
-SAMPLES_DIR = Path("samples")
+SAMPLES_DIR = Path("videos")
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -281,9 +281,9 @@ async def generate_video(model_name: str, request: GenerateRequest):
     if not video_data:
         raise HTTPException(status_code=404, detail=f"Video {request.video.id} not found")
 
-    video_path = SAMPLES_DIR / Path(video_data["url"]).name
+    video_path = SAMPLES_DIR / video_data["name"]
     if not video_path.exists():
-        raise HTTPException(status_code=404, detail=f"Video file not found at {video_path}")
+        raise HTTPException(status_code=404, detail=f"Sample file not found")
 
     tts_result = model.generate(
         text=request.tts.text,
@@ -319,3 +319,7 @@ def get_output_file(filename: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(file_path)
+
+@app.get("/")
+async def serve_index():
+    return FileResponse("index.html")
