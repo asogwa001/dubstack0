@@ -1,0 +1,34 @@
+
+1. generate a one page index.html ui for the attached server file. 
+1. the app basically dubs the to gameplay videos in 9:16 format. currently the video panels are not rendered considereing this. it renders them horizontally. 
+2. also, when you make a call to the /samples/videos, for each video, a url field is included. here is a sample respones
+{
+  "page": 1,
+  "page_size": 10,
+  "total_videos": 1,
+  "total_pages": 1,
+  "videos": [
+    {
+      "id": "895e6e5a-e86a-416d-8a2d-14b3fa2f14cd",
+      "name": "subway_surf_1.mp4",
+      "url": "https://objectstorage.af-johannesburg-1.oraclecloud.com/n/ax93j5iwjjnh/b/bucket-20251224-1638/o/subway_surf_1_preview.mp4",
+      "duration": "03:13",
+      "tags": [
+        "subway surf",
+        "running",
+        "chasing"
+      ]
+    }
+  ]
+}
+
+
+this preview is lightweight and about 3s and also in 9:16 format. i want you to render them like gifs (no sound and loop). You do not need to annotate the duration of the main video on the preview. 
+
+3. name the app DubStack Studio
+4. do not put any internal implementation in the ui (api endpoints, server variable names, videos names etc)
+from the app. and also any other internal implementation detail the user does not need to know this
+
+5. I like that you show even the inactive models in the dropdown. however, i want you to make it such that one cannot click generate dubbed video button for the models that is not inactive. 
+6. also there is a minor ux improvement you could do. when a user enters the captions but does not select a video, then goes to click generate button, the button does nothing when clicked in this state. this is good and desirable but it is better to put a small text feedback telling the user to select the video or any other conditon preventing the button from triggering. 
+7. Please remeber the style of video we are rendering. please make the ui friendly to vertical videos. 
