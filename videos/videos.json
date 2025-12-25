@@ -1,14 +1,13 @@
 {
   "videos": [
     {
-      "id": "895e6e5a-e86a-416d-8a2d-14b3fa2f14cd",
-      "name": "subway_surf_1",
-      "url": "https://objectstorage.af-johannesburg-1.oraclecloud.com/n/ax93j5iwjjnh/b/bucket-20251224-1638/o/subway_surf_1_preview.mp4",
+      "id": "cdbe9aaf-a219-4f2e-9eee-b6e4e7dfdd2b",
+      "name": "subway_surf_1.mp4",
+      "url": "videos/subway_surf_1_preview.mp4",
       "duration": "03:13",
       "tags": [
-        "subway surf",
-        "running",
-        "chasing"
+        "subway",
+        "nature"
       ]
     }
   ]
