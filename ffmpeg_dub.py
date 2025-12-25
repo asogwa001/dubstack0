@@ -41,10 +41,10 @@ def dub_video(
     # Get durations
     video_duration = get_duration(video_path)
     audio_duration = get_duration(voice_path)
-    
-    # Calculate how many times to loop the video
+
+    # Calculate loop count
     loop_count = int(audio_duration / video_duration) if audio_duration > video_duration else 0
-    
+
     print(f"Video duration: {video_duration:.2f}s")
     print(f"Audio duration: {audio_duration:.2f}s")
     print(f"Loop count: {loop_count}")
@@ -58,50 +58,43 @@ def dub_video(
         f"MarginV={margin_v}"
     )
 
-    # Trim video audio to match voice duration, then mix
-    audio_filter = (
-        f"[0:a]atrim=0:{audio_duration},volume={video_audio_volume}[va];"
-        f"[1:a]volume=1.0[ta];"
-        f"[va][ta]amix=inputs=2:dropout_transition=0,atrim=0:{audio_duration}[outa]"
-    )
+    # Check if video has audio
+    # it is possible the video does not have an audio
+    cmd_probe = ["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "json", str(video_path)]
+    result = subprocess.run(cmd_probe, capture_output=True, text=True)
+    video_has_audio = bool(json.loads(result.stdout).get("streams"))
 
-    cmd = [
-        "ffmpeg", "-y",
-    ]
+    # Build audio filter
+    if video_has_audio and video_audio_volume > 0:
+        audio_filter = (
+            f"[0:a]atrim=0:{audio_duration},volume={video_audio_volume}[va];"
+            f"[1:a]volume=1.0[ta];"
+            f"[va][ta]amix=inputs=2:dropout_transition=0,atrim=0:{audio_duration}[outa]"
+        )
+        map_audio = ["-map", "[outa]"]
+    else:
+        audio_filter = f"[1:a]atrim=0:{audio_duration},volume=1.0[outa]"
+        map_audio = ["-map", "[outa]"]
+
+    cmd = ["ffmpeg", "-y"]
     
-    # Only add stream_loop if we need to loop
     if loop_count > 0:
         cmd.extend(["-stream_loop", str(loop_count)])
     
     cmd.extend([
         "-i", str(video_path),
         "-i", str(voice_path),
-
         "-vf", f"subtitles='{srt_path.as_posix()}':force_style={subtitle_style}",
         "-filter_complex", audio_filter,
-
         "-map", "0:v:0",
-        "-map", "[outa]",
-
+    ] + map_audio + [
         "-c:v", "libx264",
         "-preset", "fast",
         "-pix_fmt", "yuv420p",
-
         "-c:a", "aac",
         "-b:a", "192k",
-
         "-shortest",
         str(output_path)
     ])
 
     subprocess.run(cmd, check=True)
-
-
-# if __name__ == "__main__":
-#     dub_video(
-#         video_path="subway_surf_1.mp4",
-#         voice_path="The_Midnight_Game__I_1.wav",
-#         srt_path="The_Midnight_Game__I_1.srt",
-#         output_path="output.mp4",
-#         video_audio_volume=0.05,
-#     )
