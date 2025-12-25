@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import argparse
 import json
@@ -112,8 +112,11 @@ def main():
         "tags": tags
     }
 
+    # if any entry exists with the same name, overwrite it
     data = json.loads(VIDEOS_JSON.read_text())
-    data.setdefault("videos", []).append(entry)
+    videos = data.setdefault("videos", [])
+    videos[:] = [v for v in videos if v.get("name") != stored_video_name]
+    videos.append(entry)
 
     VIDEOS_JSON.write_text(json.dumps(data, indent=2))
 
