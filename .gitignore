@@ -1,9 +1,8 @@
 artifacts
 __pycache__
 outputs
-*.mp4
-venv
+*venv*
 *.env*
 keys
-*.mp4
 models
+sync_previews.py
