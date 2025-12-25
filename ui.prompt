@@ -1,7 +1,9 @@
+1. Generate a single-page index.html UI for the server.py file.  
 
-1. generate a one page index.html ui for the attached server file. 
-1. the app basically dubs the to gameplay videos in 9:16 format. currently the video panels are not rendered considereing this. it renders them horizontally. 
-2. also, when you make a call to the /samples/videos, for each video, a url field is included. here is a sample respones
+2. The app is designed to dub gameplay videos in a vertical 9:16 format. Ensure that the video panels in the UI are rendered correctly for vertical videos instead of horizontally.  
+
+3. When fetching videos from /samples/videos, each video includes a url field. Here is a sample response:
+
 {
   "page": 1,
   "page_size": 10,
@@ -22,13 +24,14 @@
   ]
 }
 
+The url points to a lightweight preview of about 3 seconds in 9:16 format. Render these previews like GIFs: muted, looping, and autoplay. You do not need to display the full video duration on the preview.  
 
-this preview is lightweight and about 3s and also in 9:16 format. i want you to render them like gifs (no sound and loop). You do not need to annotate the duration of the main video on the preview. 
+4. Name the app DubStack Studio.  
 
-3. name the app DubStack Studio
-4. do not put any internal implementation in the ui (api endpoints, server variable names, videos names etc)
-from the app. and also any other internal implementation detail the user does not need to know this
+5. Do not expose any internal implementation details in the UI. This includes API endpoints, server variable names, internal video names, or any other details the user does not need to know.  
 
-5. I like that you show even the inactive models in the dropdown. however, i want you to make it such that one cannot click generate dubbed video button for the models that is not inactive. 
-6. also there is a minor ux improvement you could do. when a user enters the captions but does not select a video, then goes to click generate button, the button does nothing when clicked in this state. this is good and desirable but it is better to put a small text feedback telling the user to select the video or any other conditon preventing the button from triggering. 
-7. Please remeber the style of video we are rendering. please make the ui friendly to vertical videos. 
+6. Display both active and inactive models in the model dropdown. However, make it so the “Generate Dubbed Video” button cannot be clicked when an inactive model is selected.  
+
+7. Add user feedback for UX: if captions are entered but no video is selected, and the user clicks the generate button, show a small text message explaining why the button cannot be triggered, for example prompting the user to select a video.  
+
+8. Ensure the UI is friendly for vertical videos, reflecting the 9:16 style of content the app renders.
