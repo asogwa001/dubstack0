@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 import soundfile as sf
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from supertonic_helper import (
@@ -323,3 +324,9 @@ def get_output_file(filename: str):
 @app.get("/")
 async def serve_index():
     return FileResponse("index.html")
+
+app.mount(
+    "/videos",
+    StaticFiles(directory="videos"),
+    name="videos",
+)
