@@ -4,6 +4,9 @@ This project implements a pipeline that dubs explainers or short stories over ga
 
 [Example output](videos/demo.mp4)
 
+> ⚠️ **Development has been paused in favor of a client-only version of the project:** [DubStack](https://github.com/asogwa001/Dubstack)
+
+
 ## Requirements
 
 - Python 3.11
